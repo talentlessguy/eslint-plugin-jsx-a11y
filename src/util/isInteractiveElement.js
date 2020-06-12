@@ -1,100 +1,100 @@
 /**
  * @flow
  */
-import { dom, elementRoles, roles } from 'aria-query'
-import type { Node } from 'ast-types-flow'
-import { AXObjects, elementAXObjects } from 'axobject-query'
+import { dom, elementRoles, roles } from 'aria-query';
+import type { Node } from 'ast-types-flow';
+import { AXObjects, elementAXObjects } from 'axobject-query';
 
-import attributesComparator from './attributesComparator'
+import attributesComparator from './attributesComparator';
 
-const domKeys = [...dom.keys()]
-const roleKeys = [...roles.keys()]
-const elementRoleEntries = [...elementRoles]
+const domKeys = [...dom.keys()];
+const roleKeys = [...roles.keys()];
+const elementRoleEntries = [...elementRoles];
 
 const nonInteractiveRoles = new Set(
   roleKeys
-    .filter(name => {
-      const role = roles.get(name)
+    .filter((name) => {
+      const role = roles.get(name);
       return (
-        !role.abstract &&
+        !role.abstract
         // 'toolbar' does not descend from widget, but it does support
         // aria-activedescendant, thus in practice we treat it as a widget.
-        name !== 'toolbar' &&
-        !role.superClass.some(classes => classes.includes('widget'))
-      )
+        && name !== 'toolbar'
+        && !role.superClass.some((classes) => classes.includes('widget'))
+      );
     })
     .concat(
       // The `progressbar` is descended from `widget`, but in practice, its
       // value is always `readonly`, so we treat it as a non-interactive role.
-      'progressbar'
-    )
-)
+      'progressbar',
+    ),
+);
 
 const interactiveRoles = new Set(
   roleKeys
-    .filter(name => {
-      const role = roles.get(name)
+    .filter((name) => {
+      const role = roles.get(name);
       return (
-        !role.abstract &&
+        !role.abstract
         // The `progressbar` is descended from `widget`, but in practice, its
         // value is always `readonly`, so we treat it as a non-interactive role.
-        name !== 'progressbar' &&
-        role.superClass.some(classes => classes.includes('widget'))
-      )
+        && name !== 'progressbar'
+        && role.superClass.some((classes) => classes.includes('widget'))
+      );
     })
     .concat(
       // 'toolbar' does not descend from widget, but it does support
       // aria-activedescendant, thus in practice we treat it as a widget.
-      'toolbar'
-    )
-)
+      'toolbar',
+    ),
+);
 
 const nonInteractiveElementRoleSchemas = elementRoleEntries.reduce((accumulator, [elementSchema, roleSet]) => {
   if ([...roleSet].every((role): boolean => nonInteractiveRoles.has(role))) {
-    accumulator.push(elementSchema)
+    accumulator.push(elementSchema);
   }
-  return accumulator
-}, [])
+  return accumulator;
+}, []);
 
 const interactiveElementRoleSchemas = elementRoleEntries.reduce((accumulator, [elementSchema, roleSet]) => {
   if ([...roleSet].some((role): boolean => interactiveRoles.has(role))) {
-    accumulator.push(elementSchema)
+    accumulator.push(elementSchema);
   }
-  return accumulator
-}, [])
+  return accumulator;
+}, []);
 
-const interactiveAXObjects = new Set([...AXObjects.keys()].filter(name => AXObjects.get(name).type === 'widget'))
+const interactiveAXObjects = new Set([...AXObjects.keys()].filter((name) => AXObjects.get(name).type === 'widget'));
 
 const interactiveElementAXObjectSchemas = [...elementAXObjects].reduce((accumulator, [elementSchema, AXObjectSet]) => {
   if ([...AXObjectSet].every((role): boolean => interactiveAXObjects.has(role))) {
-    accumulator.push(elementSchema)
+    accumulator.push(elementSchema);
   }
-  return accumulator
-}, [])
+  return accumulator;
+}, []);
 
 function checkIsInteractiveElement(tagName, attributes): boolean {
   function elementSchemaMatcher(elementSchema) {
-    return tagName === elementSchema.name && attributesComparator(elementSchema.attributes, attributes)
+    return tagName === elementSchema.name && attributesComparator(elementSchema.attributes, attributes);
   }
   // Check in elementRoles for inherent interactive role associations for
   // this element.
-  const isInherentInteractiveElement = interactiveElementRoleSchemas.some(elementSchemaMatcher)
+  const isInherentInteractiveElement = interactiveElementRoleSchemas.some(elementSchemaMatcher);
   if (isInherentInteractiveElement) {
-    return true
+    return true;
   }
   // Check in elementRoles for inherent non-interactive role associations for
   // this element.
-  const isInherentNonInteractiveElement = nonInteractiveElementRoleSchemas.some(elementSchemaMatcher)
+  const isInherentNonInteractiveElement = nonInteractiveElementRoleSchemas.some(elementSchemaMatcher);
   if (isInherentNonInteractiveElement) {
-    return false
+    return false;
   }
   // Check in elementAXObjects for AX Tree associations for this element.
-  const isInteractiveAXElement = interactiveElementAXObjectSchemas.some(elementSchemaMatcher)
+  const isInteractiveAXElement = interactiveElementAXObjectSchemas.some(elementSchemaMatcher);
   if (isInteractiveAXElement) {
-    return true
+    return true;
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -107,10 +107,10 @@ const isInteractiveElement = (tagName: string, attributes: Array<Node>): boolean
   // Do not test higher level JSX components, as we do not know what
   // low-level DOM element this maps to.
   if (!domKeys.includes(tagName)) {
-    return false
+    return false;
   }
 
-  return checkIsInteractiveElement(tagName, attributes)
-}
+  return checkIsInteractiveElement(tagName, attributes);
+};
 
-export default isInteractiveElement
+export default isInteractiveElement;

@@ -4,20 +4,22 @@
  * @flow
  */
 
-import { dom, roles } from 'aria-query'
-import { getProp, elementType, eventHandlersByType, getLiteralPropValue, hasAnyProp } from 'jsx-ast-utils'
-import type { JSXOpeningElement } from 'ast-types-flow'
+import { dom, roles } from 'aria-query';
+import {
+  getProp, elementType, eventHandlersByType, getLiteralPropValue, hasAnyProp,
+} from 'jsx-ast-utils';
+import type { JSXOpeningElement } from 'ast-types-flow';
 
-import type { ESLintContext } from '../../flow/eslint'
-import { enumArraySchema, generateObjSchema } from '../util/schemas'
-import isDisabledElement from '../util/isDisabledElement'
-import isHiddenFromScreenReader from '../util/isHiddenFromScreenReader'
-import isInteractiveElement from '../util/isInteractiveElement'
-import isInteractiveRole from '../util/isInteractiveRole'
-import isNonInteractiveElement from '../util/isNonInteractiveElement'
-import isNonInteractiveRole from '../util/isNonInteractiveRole'
-import isPresentationRole from '../util/isPresentationRole'
-import getTabIndex from '../util/getTabIndex'
+import type { ESLintContext } from '../../flow/eslint';
+import { enumArraySchema, generateObjSchema } from '../util/schemas';
+import isDisabledElement from '../util/isDisabledElement';
+import isHiddenFromScreenReader from '../util/isHiddenFromScreenReader';
+import isInteractiveElement from '../util/isInteractiveElement';
+import isInteractiveRole from '../util/isInteractiveRole';
+import isNonInteractiveElement from '../util/isNonInteractiveElement';
+import isNonInteractiveRole from '../util/isNonInteractiveRole';
+import isPresentationRole from '../util/isPresentationRole';
+import getTabIndex from '../util/getTabIndex';
 
 // ----------------------------------------------------------------------------
 // Rule Definition
@@ -26,20 +28,20 @@ import getTabIndex from '../util/getTabIndex'
 const schema = generateObjSchema({
   tabbable: enumArraySchema(
     [...roles.keys()]
-      .filter(name => !roles.get(name).abstract)
-      .filter(name => roles.get(name).superClass.some(klasses => klasses.includes('widget')))
-  )
-})
-const domElements = [...dom.keys()]
+      .filter((name) => !roles.get(name).abstract)
+      .filter((name) => roles.get(name).superClass.some((klasses) => klasses.includes('widget'))),
+  ),
+});
+const domElements = [...dom.keys()];
 
-const interactiveProps = [...eventHandlersByType.mouse, ...eventHandlersByType.keyboard]
+const interactiveProps = [...eventHandlersByType.mouse, ...eventHandlersByType.keyboard];
 
 module.exports = {
   meta: {
     docs: {
-      url: 'https://github.com/evcohen/eslint-plugin-jsx-a11y/tree/master/docs/rules/interactive-supports-focus.md'
+      url: 'https://github.com/evcohen/eslint-plugin-jsx-a11y/tree/master/docs/rules/interactive-supports-focus.md',
     },
-    schema: [schema]
+    schema: [schema],
   },
 
   create: (
@@ -47,55 +49,55 @@ module.exports = {
       options: {
         tabbable: Array<string>
       }
-    }
+    },
   ) => ({
     JSXOpeningElement: (node: JSXOpeningElement) => {
-      const tabbable = (context.options && context.options[0] && context.options[0].tabbable) || []
-      const { attributes } = node
-      const type = elementType(node)
-      const hasInteractiveProps = hasAnyProp(attributes, interactiveProps)
-      const hasTabindex = getTabIndex(getProp(attributes, 'tabIndex')) !== undefined
+      const tabbable = (context.options && context.options[0] && context.options[0].tabbable) || [];
+      const { attributes } = node;
+      const type = elementType(node);
+      const hasInteractiveProps = hasAnyProp(attributes, interactiveProps);
+      const hasTabindex = getTabIndex(getProp(attributes, 'tabIndex')) !== undefined;
 
       if (!domElements.includes(type)) {
         // Do not test higher level JSX components, as we do not know what
         // low-level DOM element this maps to.
-        return
+        return;
       }
       if (
-        !hasInteractiveProps ||
-        isDisabledElement(attributes) ||
-        isHiddenFromScreenReader(type, attributes) ||
-        isPresentationRole(type, attributes)
+        !hasInteractiveProps
+        || isDisabledElement(attributes)
+        || isHiddenFromScreenReader(type, attributes)
+        || isPresentationRole(type, attributes)
       ) {
         // Presentation is an intentional signal from the author that this
         // element is not meant to be perceivable. For example, a click screen
         // to close a dialog .
-        return
+        return;
       }
 
       if (
-        hasInteractiveProps &&
-        isInteractiveRole(type, attributes) &&
-        !isInteractiveElement(type, attributes) &&
-        !isNonInteractiveElement(type, attributes) &&
-        !isNonInteractiveRole(type, attributes) &&
-        !hasTabindex
+        hasInteractiveProps
+        && isInteractiveRole(type, attributes)
+        && !isInteractiveElement(type, attributes)
+        && !isNonInteractiveElement(type, attributes)
+        && !isNonInteractiveRole(type, attributes)
+        && !hasTabindex
       ) {
-        const role = getLiteralPropValue(getProp(attributes, 'role'))
+        const role = getLiteralPropValue(getProp(attributes, 'role'));
         if (tabbable.includes(role)) {
           // Always tabbable, tabIndex = 0
           context.report({
             node,
-            message: `Elements with the '${role}' interactive role must be tabbable.`
-          })
+            message: `Elements with the '${role}' interactive role must be tabbable.`,
+          });
         } else {
           // Focusable, tabIndex = -1 or 0
           context.report({
             node,
-            message: `Elements with the '${role}' interactive role must be focusable.`
-          })
+            message: `Elements with the '${role}' interactive role must be focusable.`,
+          });
         }
       }
-    }
-  })
-}
+    },
+  }),
+};

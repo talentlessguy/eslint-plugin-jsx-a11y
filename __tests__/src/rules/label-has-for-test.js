@@ -8,56 +8,56 @@
 // Requirements
 // -----------------------------------------------------------------------------
 
-import { RuleTester } from 'eslint'
-import parserOptionsMapper from '../../__util__/parserOptionsMapper'
-import rule from '../../../src/rules/label-has-for'
+import { RuleTester } from 'eslint';
+import parserOptionsMapper from '../../__util__/parserOptionsMapper';
+import rule from '../../../src/rules/label-has-for';
 
 // -----------------------------------------------------------------------------
 // Tests
 // -----------------------------------------------------------------------------
 
-const ruleTester = new RuleTester()
+const ruleTester = new RuleTester();
 
 const expectedNestingError = {
   message: 'Form label must have the following type of associated control: nesting',
-  type: 'JSXOpeningElement'
-}
+  type: 'JSXOpeningElement',
+};
 
 const expectedSomeError = {
   message: 'Form label must have ANY of the following types of associated control: nesting, id',
-  type: 'JSXOpeningElement'
-}
+  type: 'JSXOpeningElement',
+};
 
 const expectedEveryError = {
   message: 'Form label must have ALL of the following types of associated control: nesting, id',
-  type: 'JSXOpeningElement'
-}
+  type: 'JSXOpeningElement',
+};
 
 const optionsComponents = [
   {
-    components: ['Label', 'Descriptor']
-  }
-]
+    components: ['Label', 'Descriptor'],
+  },
+];
 const optionsRequiredNesting = [
   {
-    required: 'nesting'
-  }
-]
+    required: 'nesting',
+  },
+];
 const optionsRequiredSome = [
   {
-    required: { some: ['nesting', 'id'] }
-  }
-]
+    required: { some: ['nesting', 'id'] },
+  },
+];
 const optionsRequiredEvery = [
   {
-    required: { every: ['nesting', 'id'] }
-  }
-]
+    required: { every: ['nesting', 'id'] },
+  },
+];
 const optionsChildrenAllowed = [
   {
-    allowChildren: true
-  }
-]
+    allowChildren: true,
+  },
+];
 
 ruleTester.run('label-has-for', rule, {
   valid: [
@@ -72,35 +72,35 @@ ruleTester.run('label-has-for', rule, {
     { code: '<UX.Layout>test</UX.Layout>' },
 
     // CUSTOM ELEMENT ARRAY OPTION TESTS
-    { code: '<Label htmlFor="foo" />', options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])] },
-    { code: '<Label htmlFor={"foo"} />', options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])] },
-    { code: '<Label htmlFor={foo} />', options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])] },
-    { code: '<Label htmlFor={`${id}`} />', options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])] },
+    { code: '<Label htmlFor="foo" />', options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }] },
+    { code: '<Label htmlFor={"foo"} />', options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }] },
+    { code: '<Label htmlFor={foo} />', options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }] },
+    { code: '<Label htmlFor={`${id}`} />', options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }] },
     { code: '<div />', options: optionsComponents },
     { code: '<Label htmlFor="something"><input /></Label>', options: optionsComponents },
     {
       code: '<Label htmlFor="foo">Test!</Label>',
-      options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])]
+      options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }],
     },
     {
       code: '<Descriptor htmlFor="foo" />',
-      options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])]
+      options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }],
     },
     {
       code: '<Descriptor htmlFor={"foo"} />',
-      options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])]
+      options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }],
     },
     {
       code: '<Descriptor htmlFor={foo} />',
-      options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])]
+      options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }],
     },
     {
       code: '<Descriptor htmlFor={`${id}`} />',
-      options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])]
+      options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }],
     },
     {
       code: '<Descriptor htmlFor="foo">Test!</Descriptor>',
-      options: [Object.assign({}, optionsComponents[0], optionsRequiredSome[0])]
+      options: [{ ...optionsComponents[0], ...optionsRequiredSome[0] }],
     },
     { code: '<label htmlFor="foo" />', options: optionsRequiredSome },
     { code: '<label htmlFor={"foo"} />', options: optionsRequiredSome },
@@ -113,7 +113,7 @@ ruleTester.run('label-has-for', rule, {
     { code: '<label><input /></label>', options: optionsChildrenAllowed },
     {
       code: '<Descriptor htmlFor="foo">Test!</Descriptor>',
-      options: [Object.assign({}, optionsComponents, optionsChildrenAllowed)]
+      options: [{ ...optionsComponents, ...optionsChildrenAllowed }],
     },
     { code: '<label>Test!</label>', options: optionsChildrenAllowed },
     { code: '<label htmlFor="foo">Test!</label>', options: optionsChildrenAllowed },
@@ -122,13 +122,13 @@ ruleTester.run('label-has-for', rule, {
     {
       code:
         '<label htmlFor={id}>{ labelText }<div><input id={id} type="checkbox" name={id} value={value} /></div></label>',
-      options: optionsRequiredEvery
+      options: optionsRequiredEvery,
     },
     {
       code:
         '<label htmlFor={id}>{ labelText }<div><div><div><div><input id={id} type="checkbox" name={id} value={value} /></div></div></div></div></label>',
-      options: optionsRequiredEvery
-    }
+      options: optionsRequiredEvery,
+    },
   ].map(parserOptionsMapper),
   invalid: [
     // DEFAULT ELEMENT 'label' TESTS
@@ -149,102 +149,102 @@ ruleTester.run('label-has-for', rule, {
       code:
         '<label htmlFor={id}>{ labelText }<div><div><div><div><div id={id} type="checkbox" name={id} value={value} /></div></div></div></div></label>',
       errors: [expectedEveryError],
-      options: optionsRequiredEvery
+      options: optionsRequiredEvery,
     },
     //
     // // CUSTOM ELEMENT ARRAY OPTION TESTS
     {
       code: '<Label></Label>',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     {
       code: '<Label htmlFor="foo" />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Label htmlFor={"foo"} />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Label htmlFor={foo} />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Label htmlFor={`${id}`} />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Label htmlFor="foo">Test!</Label>',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Descriptor htmlFor="foo" />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Descriptor htmlFor={"foo"} />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Descriptor htmlFor={foo} />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Descriptor htmlFor={`${id}`} />',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     {
       code: '<Descriptor htmlFor="foo">Test!</Descriptor>',
       errors: [expectedEveryError],
-      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }]
+      options: [{ ...optionsComponents[0], ...optionsRequiredEvery[0] }],
     },
     { code: '<Label id="foo" />', errors: [expectedEveryError], options: optionsComponents },
     {
       code: '<Label htmlFor={undefined} />',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     {
       code: '<Label htmlFor={`${undefined}`} />',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     { code: '<Label>First Name</Label>', errors: [expectedEveryError], options: optionsComponents },
     {
       code: '<Label {...props}>Foo</Label>',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     { code: '<Descriptor id="foo" />', errors: [expectedEveryError], options: optionsComponents },
     {
       code: '<Descriptor htmlFor={undefined} />',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     {
       code: '<Descriptor htmlFor={`${undefined}`} />',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     {
       code: '<Descriptor>First Name</Descriptor>',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     {
       code: '<Descriptor {...props}>Foo</Descriptor>',
       errors: [expectedEveryError],
-      options: optionsComponents
+      options: optionsComponents,
     },
     { code: '<label>{children}</label>', errors: [expectedEveryError], options: optionsComponents },
     { code: '<label htmlFor="foo" />', errors: [expectedNestingError], options: optionsRequiredNesting },
@@ -255,13 +255,13 @@ ruleTester.run('label-has-for', rule, {
     {
       code: '<form><input type="text" id="howmuch" value="1" /><label htmlFor="howmuch">How much ?</label></form>',
       errors: [expectedEveryError],
-      options: optionsRequiredEvery
+      options: optionsRequiredEvery,
     },
     {
       code:
         '<form><input type="text" id="howmuch" value="1" /><label htmlFor="howmuch">How much ?<span /></label></form>',
       errors: [expectedEveryError],
-      options: optionsRequiredEvery
-    }
-  ].map(parserOptionsMapper)
-})
+      options: optionsRequiredEvery,
+    },
+  ].map(parserOptionsMapper),
+});
