@@ -9,7 +9,6 @@
 
 import { dom } from 'aria-query';
 import { getProp, hasAnyProp, elementType } from 'jsx-ast-utils';
-import includes from 'array-includes';
 import { generateObjSchema } from '../util/schemas';
 import isHiddenFromScreenReader from '../util/isHiddenFromScreenReader';
 import isInteractiveElement from '../util/isInteractiveElement';
@@ -38,15 +37,12 @@ module.exports = {
       const type = elementType(node);
       const requiredProps = ['onkeydown', 'onkeyup', 'onkeypress'];
 
-      if (!includes(domElements, type)) {
+      if (!domElements.includes(type)) {
         // Do not test higher level JSX components, as we do not know what
         // low-level DOM element this maps to.
         return;
       }
-      if (
-        isHiddenFromScreenReader(type, props)
-        || isPresentationRole(type, props)
-      ) {
+      if (isHiddenFromScreenReader(type, props) || isPresentationRole(type, props)) {
         return;
       }
       if (isInteractiveElement(type, props)) {

@@ -1,16 +1,13 @@
 /**
  * @flow
  */
-import { dom } from 'aria-query';
-import includes from 'array-includes';
+import { dom } from 'aria-query'
 
-const domElements = [...dom.keys()];
+const domElements = [...dom.keys()]
 
 /**
  * Returns boolean indicating whether the given element is a DOM element.
  */
-const isDOMElement = (
-  tagName: string,
-): boolean => includes(domElements, tagName);
+const isDOMElement = (tagName: string): boolean => domElements.includes(tagName)
 
-export default isDOMElement;
+export default isDOMElement

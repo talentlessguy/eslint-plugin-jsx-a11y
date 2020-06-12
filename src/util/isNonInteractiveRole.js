@@ -2,18 +2,14 @@
  * @flow
  */
 
-import {
-  dom,
-  roles as rolesMap,
-} from 'aria-query';
-import type { Node } from 'ast-types-flow';
-import { getProp, getLiteralPropValue } from 'jsx-ast-utils';
-import includes from 'array-includes';
+import { dom, roles as rolesMap } from 'aria-query'
+import type { Node } from 'ast-types-flow'
+import { getProp, getLiteralPropValue } from 'jsx-ast-utils'
 
-const roles = [...rolesMap.keys()];
+const roles = [...rolesMap.keys()]
 const nonInteractiveRoles = roles
-  .filter((name) => !rolesMap.get(name).abstract)
-  .filter((name) => !rolesMap.get(name).superClass.some((klasses) => includes(klasses, 'widget')));
+  .filter(name => !rolesMap.get(name).abstract)
+  .filter(name => !rolesMap.get(name).superClass.some(klasses => klasses.includes('widget')))
 
 /**
  * Returns boolean indicating whether the given element has a role
@@ -33,35 +29,29 @@ const nonInteractiveRoles = roles
  * cannot be made in this case and false is returned.
  */
 
-const isNonInteractiveRole = (
-  tagName: string,
-  attributes: Array<Node>,
-): boolean => {
+const isNonInteractiveRole = (tagName: string, attributes: Array<Node>): boolean => {
   // Do not test higher level JSX components, as we do not know what
   // low-level DOM element this maps to.
   if (!dom.has(tagName)) {
-    return false;
+    return false
   }
 
-  const role = getLiteralPropValue(getProp(attributes, 'role'));
+  const role = getLiteralPropValue(getProp(attributes, 'role'))
 
-  let isNonInteractive = false;
-  const normalizedValues = String(role).toLowerCase().split(' ');
-  const validRoles = normalizedValues.reduce((
-    accumulator: Array<string>,
-    name: string,
-  ) => {
-    if (includes(roles, name)) {
-      accumulator.push(name);
+  let isNonInteractive = false
+  const normalizedValues = String(role).toLowerCase().split(' ')
+  const validRoles = normalizedValues.reduce((accumulator: Array<string>, name: string) => {
+    if (roles.includes(name)) {
+      accumulator.push(name)
     }
-    return accumulator;
-  }, []);
+    return accumulator
+  }, [])
   if (validRoles.length > 0) {
     // The first role value is a series takes precedence.
-    isNonInteractive = includes(nonInteractiveRoles, validRoles[0]);
+    isNonInteractive = nonInteractiveRoles.includes(validRoles[0])
   }
 
-  return isNonInteractive;
-};
+  return isNonInteractive
+}
 
-export default isNonInteractiveRole;
+export default isNonInteractiveRole

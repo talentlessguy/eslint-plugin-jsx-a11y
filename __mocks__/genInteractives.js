@@ -3,7 +3,6 @@
  */
 
 import { dom, roles } from 'aria-query';
-import includes from 'array-includes';
 import JSXAttributeMock from './JSXAttributeMock';
 import JSXElementMock from './JSXElementMock';
 
@@ -56,7 +55,7 @@ const interactiveElementsMap = {
   video: [],
 };
 
-const nonInteractiveElementsMap: {[string]: Array<{[string]: string}>} = {
+const nonInteractiveElementsMap: { [string]: Array<{ [string]: string }> } = {
   abbr: [],
   aside: [],
   article: [],
@@ -137,23 +136,21 @@ const interactiveRoles = []
     'toolbar',
   )
   .filter((role) => !roles.get(role).abstract)
-  .filter((role) => roles.get(role).superClass.some((klasses) => includes(klasses, 'widget')));
+  .filter((role) => roles.get(role).superClass.some((klasses) => klasses.includes('widget')));
 
 const nonInteractiveRoles = roleNames
   .filter((role) => !roles.get(role).abstract)
-  .filter((role) => !roles.get(role).superClass.some((klasses) => includes(klasses, 'widget')))
+  .filter((role) => !roles.get(role).superClass.some((klasses) => klasses.includes('widget')))
   // 'toolbar' does not descend from widget, but it does support
   // aria-activedescendant, thus in practice we treat it as a widget.
-  .filter((role) => !includes(['toolbar'], role));
+  .filter((role) => !['toolbar'].includes(role));
 
 export function genElementSymbol(openingElement: Object) {
   return (
-    openingElement.name.name + (openingElement.attributes.length > 0
-      ? `${openingElement.attributes
-        .map((attr) => `[${attr.name.name}="${attr.value.value}"]`)
-        .join('')}`
-      : ''
-    )
+    openingElement.name.name
+    + (openingElement.attributes.length > 0
+      ? `${openingElement.attributes.map((attr) => `[${attr.name.name}="${attr.value.value}"]`).join('')}`
+      : '')
   );
 }
 
@@ -170,10 +167,7 @@ export function genInteractiveElements(): Array<TJSXElementMock> {
 }
 
 export function genInteractiveRoleElements(): Array<TJSXElementMock> {
-  return [...interactiveRoles, 'button article', 'fakerole button article'].map((value): TJSXElementMock => JSXElementMock(
-    'div',
-    [JSXAttributeMock('role', value)],
-  ));
+  return [...interactiveRoles, 'button article', 'fakerole button article'].map((value): TJSXElementMock => JSXElementMock('div', [JSXAttributeMock('role', value)]));
 }
 
 export function genNonInteractiveElements(): Array<TJSXElementMock> {
@@ -189,11 +183,7 @@ export function genNonInteractiveElements(): Array<TJSXElementMock> {
 }
 
 export function genNonInteractiveRoleElements() {
-  return [
-    ...nonInteractiveRoles,
-    'article button',
-    'fakerole article button',
-  ].map((value) => JSXElementMock('div', [JSXAttributeMock('role', value)]));
+  return [...nonInteractiveRoles, 'article button', 'fakerole article button'].map((value) => JSXElementMock('div', [JSXAttributeMock('role', value)]));
 }
 
 export function genAbstractRoleElements() {
