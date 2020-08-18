@@ -2,8 +2,8 @@
  * @flow
  */
 
-import type { Node } from 'ast-types-flow'
-import { getProp } from 'jsx-ast-utils'
+import type { Node } from 'ast-types-flow';
+import { getProp } from 'jsx-ast-utils';
 
 /**
  * Returns boolean indicating whether the given element has been specified with
@@ -14,21 +14,21 @@ import { getProp } from 'jsx-ast-utils'
  */
 
 const isNonLiteralProperty = (attributes: Array<Node>, propName: string): boolean => {
-  const prop = getProp(attributes, propName)
-  if (!prop) return false
+  const prop = getProp(attributes, propName);
+  if (!prop) return false;
 
-  const propValue = prop.value
-  if (!propValue) return false
+  const propValue = prop.value;
+  if (!propValue) return false;
 
-  if (propValue.type === 'Literal') return false
+  if (propValue.type === 'Literal') return false;
 
   if (propValue.type === 'JSXExpressionContainer') {
-    const { expression } = propValue
-    if (expression.type === 'Identifier' && expression.name === 'undefined') return false
-    if (expression.type === 'JSXText') return false
+    const { expression } = propValue;
+    if (expression.type === 'Identifier' && expression.name === 'undefined') return false;
+    if (expression.type === 'JSXText') return false;
   }
 
-  return true
-}
+  return true;
+};
 
-export default isNonLiteralProperty
+export default isNonLiteralProperty;
